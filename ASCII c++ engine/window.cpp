@@ -14,7 +14,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         HDC hdc = BeginPaint(hwnd, &ps);
 
         // ќчищуЇмо фон
-        HBRUSH hBrush = CreateSolidBrush(RGB(110, 0, 0));
+        HBRUSH hBrush = CreateSolidBrush(RGB(100, 0, 0));
         RECT rect;
         GetClientRect(hwnd, &rect);
         FillRect(hdc, &rect, hBrush);

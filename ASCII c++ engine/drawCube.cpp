@@ -41,7 +41,7 @@ void Rotate(Vec3& point, float angleX, float angleY) {
 
 // Проекція 3D-точки на 2D-площину
 void Project(Vec3 point, int& x, int& y) {
-    float distance = 2.0f;
+    float distance = 3.0f;
     x = static_cast<int>((point.x / (point.z + distance)) * 800 / 2 + 800 / 2);
     y = static_cast<int>((point.y / (point.z + distance)) * 600 / 2 + 600 / 2);
 }
