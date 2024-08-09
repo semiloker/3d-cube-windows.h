@@ -1,0 +1,9 @@
+
+*.vsidx
+*.ipch
+.vs/ASCII c++ engine/v17/.suo
+.vs/ASCII c++ engine/v17/Browse.VC.db
+.vs/ASCII c++ engine/v17/Browse.VC.db-shm
+.vs/ASCII c++ engine/v17/Browse.VC.db-wal
+.vs/ASCII c++ engine/v17/Browse.VC.opendb
+.vs/ASCII c++ engine/v17/Solution.VC.db
