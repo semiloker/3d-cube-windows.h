@@ -6,8 +6,9 @@ static float angleX = 0.0f;
 static float angleY = 0.0f;
 static POINT lastMousePos;
 static bool firstMouseMovement = true;
-static float cameraX = 0.0f;
-static float cameraY = 0.0f;
+static float cameraX = 0.0f;  // Положення камери по X
+static float cameraY = 0.0f;  // Положення камери по Y
+static float cameraZ = 0.0f;  // Положення камери по Z
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
@@ -26,10 +27,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         DeleteObject(hBrush);
 
         // Малювання куба
-        DrawCube(hdc, angleX, angleY, windowWidth, windowHeight, cameraX, cameraY);
+        DrawCube(hdc, angleX, angleY, windowWidth, windowHeight, cameraX, cameraY, cameraZ);
 
         // Текст інформації про напрямок камери
-        std::wstring directionText = L"Camera Direction: X = " + std::to_wstring(cameraX) + L", Y = " + std::to_wstring(cameraY) +
+        std::wstring directionText = L"Camera Position: X = " + std::to_wstring(cameraX) + L", Y = " + std::to_wstring(cameraY) +
+            L", Z = " + std::to_wstring(cameraZ) +
             L" | Mouse Look: AngleX = " + std::to_wstring(angleX) + L", AngleY = " + std::to_wstring(angleY);
         DrawTextOnScreen(hdc, directionText, 10, 10);
 
@@ -63,10 +65,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_KEYDOWN: {
         // Рух камери за допомогою клавіш
         switch (wParam) {
-        case 'W': cameraY -= 0.1f; break;  // Перемістити камеру вгору
-        case 'S': cameraY += 0.1f; break;  // Перемістити камеру вниз
-        case 'A': cameraX -= 0.1f; break;  // Перемістити камеру вліво
-        case 'D': cameraX += 0.1f; break;  // Перемістити камеру вправо
+        case VK_CONTROL: cameraY -= 0.1f; break;  // Перемістити камеру вгору
+        case VK_SPACE : cameraY += 0.1f; break;  // Перемістити камеру вниз
+        case 'D': cameraX -= 0.1f; break;  // Перемістити камеру вліво
+        case 'A': cameraX += 0.1f; break;  // Перемістити камеру вправо
+        case 'W' : cameraZ -= 0.1f; break; // Перемістити камеру вперед (по осі Z)
+        case 'S': cameraZ += 0.1f; break; // Перемістити камеру назад (по осі Z)
         }
         InvalidateRect(hwnd, NULL, FALSE);  // Перемалювати вікно
         return 0;

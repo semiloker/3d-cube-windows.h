@@ -78,24 +78,24 @@ void OffsetCube(Vec3 vertices[], float offsetX, float offsetY, float offsetZ) {
 }
 
 // малювання куба
-void DrawCube(HDC hdc, float angleX, float angleY, int windowWidth, int windowHeight, float cameraX, float cameraY) {
+void DrawCube(HDC hdc, float angleX, float angleY, int windowWidth, int windowHeight, float offsetX, float offsetY, float offsetZ) {
     int projectedX[8], projectedY[8];
     Vec3 rotatedVertices[8];
 
-    // зміщення для трьох кубів
+    // Зміщення для трьох кубів
     Vec3 offsets[4] = {
-        {-1.0f + cameraX, 0.0f + cameraY, 0.0f},   // Зліва
-        {-1.0f + cameraX, -1.0f + cameraY, 0.0f},    // зліва-зверху
-        {-1.0f + cameraX, 0.0f + cameraY, -1.0f},     // зліва-спереду
+        {-1.0f, 0.0f, 0.0f},   // Зліва
+        {-1.0f, -1.0f, 0.0f},    // зліва-зверху
+        {-1.0f, 0.0f, -1.0f},     // зліва-спереду
     };
 
-    // малюю кожен куб
+    // Малювання кожного куба
     for (int j = 0; j < 4; j++) {
         // Копіюємо вершини куба та зміщуємо їх
         for (int i = 0; i < 8; i++) {
             rotatedVertices[i] = cubeVertices[i];
         }
-        OffsetCube(rotatedVertices, offsets[j].x, offsets[j].y, offsets[j].z);
+        OffsetCube(rotatedVertices, offsets[j].x + offsetX, offsets[j].y + offsetY, offsets[j].z + offsetZ);
 
         // Обертаємо та проектуємо всі вершини куба
         for (int i = 0; i < 8; i++) {
