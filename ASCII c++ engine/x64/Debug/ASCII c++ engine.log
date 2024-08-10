@@ -1,4 +1,15 @@
-﻿  main.cpp
+﻿  drawCube.cpp
+  main.cpp
+  window.cpp
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(104,42): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(104,73): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(105,42): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(105,73): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(106,42): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(106,73): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(107,42): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\smlkr\Desktop\ASCII c++ engine\ASCII c++ engine\window.cpp(107,73): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
   ASCII c++ engine.vcxproj -> C:\Users\smlkr\Desktop\ASCII c++ engine\x64\Debug\ASCII c++ engine.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.
