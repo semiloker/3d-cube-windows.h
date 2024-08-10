@@ -6,6 +6,8 @@ static float angleX = 0.0f;
 static float angleY = 0.0f;
 static POINT lastMousePos;
 static bool firstMouseMovement = true;
+static float cameraX = 0.0f;
+static float cameraY = 0.0f;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
@@ -13,7 +15,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
 
-        // Очищуємо фон
+        // Очищення фону
         HBRUSH hBrush = CreateSolidBrush(RGB(100, 0, 0));
         RECT rect;
         GetClientRect(hwnd, &rect);
@@ -23,8 +25,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         FillRect(hdc, &rect, hBrush);
         DeleteObject(hBrush);
 
-        // Малюємо куб
-        DrawCube(hdc, angleX, angleY, windowWidth, windowHeight);
+        // Малювання куба
+        DrawCube(hdc, angleX, angleY, windowWidth, windowHeight, cameraX, cameraY);
+
+        // Текст інформації про напрямок камери
+        std::wstring directionText = L"Camera Direction: X = " + std::to_wstring(cameraX) + L", Y = " + std::to_wstring(cameraY) +
+            L" | Mouse Look: AngleX = " + std::to_wstring(angleX) + L", AngleY = " + std::to_wstring(angleY);
+        DrawTextOnScreen(hdc, directionText, 10, 10);
 
         EndPaint(hwnd, &ps);
         return 0;
@@ -51,6 +58,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         lastMousePos.y = mouseY;
 
         InvalidateRect(hwnd, NULL, FALSE);
+        return 0;
+    }
+    case WM_KEYDOWN: {
+        // Рух камери за допомогою клавіш
+        switch (wParam) {
+        case 'W': cameraY -= 0.1f; break;  // Перемістити камеру вгору
+        case 'S': cameraY += 0.1f; break;  // Перемістити камеру вниз
+        case 'A': cameraX -= 0.1f; break;  // Перемістити камеру вліво
+        case 'D': cameraX += 0.1f; break;  // Перемістити камеру вправо
+        }
+        InvalidateRect(hwnd, NULL, FALSE);  // Перемалювати вікно
+        return 0;
+    }
+    case WM_LBUTTONDOWN: {
+        // Скидання статусу миші
+        firstMouseMovement = true;
         return 0;
     }
     case WM_DESTROY: {

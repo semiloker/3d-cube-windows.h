@@ -2,6 +2,9 @@
 #include "window.h"
 #include <chrono>
 
+int cameraX = 0;  // Положення камери по X
+int cameraY = 0;  // Положення камери по Y
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     HWND hwnd = CreateMainWindow(hInstance, nCmdShow);
 
