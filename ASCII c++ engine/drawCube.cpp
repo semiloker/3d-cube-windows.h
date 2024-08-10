@@ -2,71 +2,96 @@
 #include <cmath>
 
 struct Vec3 {
-    float x, y, z;
+	float x, y, z;
 };
 
-// Основні точки куба
+// РѕСЃРЅРѕРІРЅС– С‚РѕС‡РєРё РєСѓР±Р°
 Vec3 cubeVertices[] = {
-    {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
-    {0.5f, 0.5f, -0.5f},   {-0.5f, 0.5f, -0.5f},
-    {-0.5f, -0.5f, 0.5f},  {0.5f, -0.5f, 0.5f},
-    {0.5f, 0.5f, 0.5f},    {-0.5f, 0.5f, 0.5f}
+	{-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
+	{0.5f, 0.5f, -0.5f},   {-0.5f, 0.5f, -0.5f},
+	{-0.5f, -0.5f, 0.5f},  {0.5f, -0.5f, 0.5f},
+	{0.5f, 0.5f, 0.5f},    {-0.5f, 0.5f, 0.5f}
 };
 
-// Сторони куба, які треба малювати
+// СЃС‚РѕСЂРѕРЅРё РєСѓР±Р°, СЏРєС– С‚СЂРµР±Р° РјР°Р»СЋРІР°С‚Рё
 int cubeEdges[][2] = {
-    {0, 1}, {1, 2}, {2, 3}, {3, 0},
-    {4, 5}, {5, 6}, {6, 7}, {7, 4},
-    {0, 4}, {1, 5}, {2, 6}, {3, 7}
+	{0, 1}, {1, 2}, {2, 3}, {3, 0},
+	{4, 5}, {5, 6}, {6, 7}, {7, 4},
+	{0, 4}, {1, 5}, {2, 6}, {3, 7}
 };
 
-// Функція для обертання куба
+// С„СѓРЅРєС†С–СЏ РґР»СЏ РѕР±РµСЂС‚Р°РЅРЅСЏ РєСѓР±Р°
 void Rotate(Vec3& point, float angleX, float angleY) {
-    float cosX = cos(angleX);
-    float sinX = sin(angleX);
-    float cosY = cos(angleY);
-    float sinY = sin(angleY);
+	float cosX = cos(angleX);
+	float sinX = sin(angleX);
+	float cosY = cos(angleY);
+	float sinY = sin(angleY);
 
-    // Обертання навколо осі Y
-    float x = point.x * cosY - point.z * sinY;
-    float z = point.x * sinY + point.z * cosY;
-    point.x = x;
-    point.z = z;
+	// РѕР±РµСЂС‚Р°РЅРЅСЏ РЅР°РІРєРѕР»Рѕ РѕСЃС– Y
+	float x = point.x * cosY - point.z * sinY;
+	float z = point.x * sinY + point.z * cosY;
+	point.x = x;
+	point.z = z;
 
-    // Обертання навколо осі X
-    float y = point.y * cosX - point.z * sinX;
-    point.z = point.y * sinX + point.z * cosX;
-    point.y = y;
+	// РѕР±РµСЂС‚Р°РЅРЅСЏ РЅР°РІРєРѕР»Рѕ РѕСЃС– X
+	float y = point.y * cosX - point.z * sinX;
+	point.z = point.y * sinX + point.z * cosX;
+	point.y = y;
 }
 
-// Проекція 3D-точки на 2D-площину
+// РїСЂРѕРµРєС†С–СЏ 3D-С‚РѕС‡РєРё РЅР° 2D-РїР»РѕС‰РёРЅСѓ
 void Project(Vec3 point, int& x, int& y) {
-    float distance = 3.0f;
-    x = static_cast<int>((point.x / (point.z + distance)) * 800 / 2 + 800 / 2);
-    y = static_cast<int>((point.y / (point.z + distance)) * 600 / 2 + 600 / 2);
+	float distance = 3.0f;
+	x = static_cast<int>((point.x / (point.z + distance)) * 800 / 2 + 800 / 2);
+	y = static_cast<int>((point.y / (point.z + distance)) * 600 / 2 + 600 / 2);
 }
 
-// Малювання лінії між двома точками
+// РјР°Р»СЋРІР°РЅРЅСЏ Р»С–РЅС–С— РјС–Р¶ РґРІРѕРјР° С‚РѕС‡РєР°РјРё
 void DrawLine(HDC hdc, int x1, int y1, int x2, int y2) {
-    MoveToEx(hdc, x1, y1, NULL);
-    LineTo(hdc, x2, y2);
+	MoveToEx(hdc, x1, y1, NULL);
+	LineTo(hdc, x2, y2);
 }
 
-// Малювання куба
+// С„СѓРЅРєС†С–СЏ РґР»СЏ Р·РјС–С‰РµРЅРЅСЏ РєСѓР±Р°
+void OffsetCube(Vec3 vertices[], float offsetX, float offsetY, float offsetZ) {
+	for (int i = 0; i < 8; i++) {
+		vertices[i].x += offsetX;
+		vertices[i].y += offsetY;
+		vertices[i].z += offsetZ;
+	}
+}
+
+// РјР°Р»СЋРІР°РЅРЅСЏ РєСѓР±Р°
 void DrawCube(HDC hdc, float angleX, float angleY) {
-    int projectedX[8], projectedY[8];
-    Vec3 rotatedVertices[8];
+	int projectedX[8], projectedY[8];
+	Vec3 rotatedVertices[8];
 
-    // Обертаємо та проектуємо всі вершини куба
-    for (int i = 0; i < 8; i++) {
-        rotatedVertices[i] = cubeVertices[i];
-        Rotate(rotatedVertices[i], angleX, angleY);
-        Project(rotatedVertices[i], projectedX[i], projectedY[i]);
-    }
+	// Р·РјС–С‰РµРЅРЅСЏ РґР»СЏ С‚СЂСЊРѕС… РєСѓР±С–РІ
+	Vec3 offsets[3] = {
+		{-1.0f, 0.0f, 0.0f},   // Р—Р»С–РІР°
+		{-1.0f, -1.0f, 0.0f},    // Р·Р»С–РІР°-Р·РІРµСЂС…Сѓ
+		{-1.0f, 0.0f, -1.0f},     // Р·Р»С–РІР°-СЃРїРµСЂРµРґСѓ
+		// {1.0f, 0.0f, -1.0f}
+	};
 
-    // Малюємо всі грані куба
-    for (int i = 0; i < 12; i++) {
-        DrawLine(hdc, projectedX[cubeEdges[i][0]], projectedY[cubeEdges[i][0]],
-            projectedX[cubeEdges[i][1]], projectedY[cubeEdges[i][1]]);
-    }
+	// РјР°Р»СЋСЋ РєРѕР¶РµРЅ РєСѓР±
+	for (int j = 0; j < 2; j++) {
+		// РљРѕРїС–СЋС”РјРѕ РІРµСЂС€РёРЅРё РєСѓР±Р° С‚Р° Р·РјС–С‰СѓС”РјРѕ С—С…
+		for (int i = 0; i < 8; i++) {
+			rotatedVertices[i] = cubeVertices[i];
+		}
+		OffsetCube(rotatedVertices, offsets[j].x, offsets[j].y, offsets[j].z);
+
+		// РћР±РµСЂС‚Р°С”РјРѕ С‚Р° РїСЂРѕРµРєС‚СѓС”РјРѕ РІСЃС– РІРµСЂС€РёРЅРё РєСѓР±Р°
+		for (int i = 0; i < 8; i++) {
+			Rotate(rotatedVertices[i], angleX, angleY);
+			Project(rotatedVertices[i], projectedX[i], projectedY[i]);
+		}
+
+		// РњР°Р»СЋС”РјРѕ РІСЃС– РіСЂР°РЅС– РєСѓР±Р°
+		for (int i = 0; i < 12; i++) {
+			DrawLine(hdc, projectedX[cubeEdges[i][0]], projectedY[cubeEdges[i][0]],
+				projectedX[cubeEdges[i][1]], projectedY[cubeEdges[i][1]]);
+		}
+	}
 }
