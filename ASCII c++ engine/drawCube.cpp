@@ -40,10 +40,13 @@ void Rotate(Vec3& point, float angleX, float angleY) {
 }
 
 // проекція 3D-точки на 2D-площину
-void Project(Vec3 point, int& x, int& y) {
+void Project(Vec3 point, int& x, int& y, int windowWidth, int windowHeight) {
 	float distance = 3.0f;
-	x = static_cast<int>((point.x / (point.z + distance)) * 800 / 2 + 800 / 2);
-	y = static_cast<int>((point.y / (point.z + distance)) * 600 / 2 + 600 / 2);
+	float scale = 500; // масштаб, щоб куб залишався того ж розміру
+
+	// Проекція точки
+	x = static_cast<int>((point.x / (point.z + distance)) * scale + windowWidth / 2);
+	y = static_cast<int>((point.y / (point.z + distance)) * scale + windowHeight / 2);
 }
 
 // малювання лінії між двома точками
@@ -52,7 +55,7 @@ void DrawLine(HDC hdc, int x1, int y1, int x2, int y2) {
 	LineTo(hdc, x2, y2);
 }
 
-// функція для зміщення куба
+// ункція для зміщення куба
 void OffsetCube(Vec3 vertices[], float offsetX, float offsetY, float offsetZ) {
 	for (int i = 0; i < 8; i++) {
 		vertices[i].x += offsetX;
@@ -62,20 +65,19 @@ void OffsetCube(Vec3 vertices[], float offsetX, float offsetY, float offsetZ) {
 }
 
 // малювання куба
-void DrawCube(HDC hdc, float angleX, float angleY) {
+void DrawCube(HDC hdc, float angleX, float angleY, int windowWidth, int windowHeight) {
 	int projectedX[8], projectedY[8];
 	Vec3 rotatedVertices[8];
 
 	// зміщення для трьох кубів
-	Vec3 offsets[3] = {
+	Vec3 offsets[4] = {
 		{-1.0f, 0.0f, 0.0f},   // Зліва
 		{-1.0f, -1.0f, 0.0f},    // зліва-зверху
 		{-1.0f, 0.0f, -1.0f},     // зліва-спереду
-		// {1.0f, 0.0f, -1.0f}
 	};
 
 	// малюю кожен куб
-	for (int j = 0; j < 2; j++) {
+	for (int j = 0; j < 4; j++) {
 		// Копіюємо вершини куба та зміщуємо їх
 		for (int i = 0; i < 8; i++) {
 			rotatedVertices[i] = cubeVertices[i];
@@ -85,7 +87,7 @@ void DrawCube(HDC hdc, float angleX, float angleY) {
 		// Обертаємо та проектуємо всі вершини куба
 		for (int i = 0; i < 8; i++) {
 			Rotate(rotatedVertices[i], angleX, angleY);
-			Project(rotatedVertices[i], projectedX[i], projectedY[i]);
+			Project(rotatedVertices[i], projectedX[i], projectedY[i], windowWidth, windowHeight);
 		}
 
 		// Малюємо всі грані куба

@@ -17,11 +17,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         HBRUSH hBrush = CreateSolidBrush(RGB(100, 0, 0));
         RECT rect;
         GetClientRect(hwnd, &rect);
+        int windowWidth = rect.right - rect.left;
+        int windowHeight = rect.bottom - rect.top;
+
         FillRect(hdc, &rect, hBrush);
         DeleteObject(hBrush);
 
         // Малюємо куб
-        DrawCube(hdc, angleX, angleY);
+        DrawCube(hdc, angleX, angleY, windowWidth, windowHeight);
 
         EndPaint(hwnd, &ps);
         return 0;
@@ -74,7 +77,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow) {
         CLASS_NAME,                     // Ім'я класу
         L"3D Cube",                     // Назва вікна
         WS_OVERLAPPEDWINDOW,            // Стиль вікна
-        CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, // Розмір і положення вікна
+        CW_USEDEFAULT, CW_USEDEFAULT, 500, 500, // Розмір і положення вікна
         NULL,                           // Батьківське вікно
         NULL,                           // Меню
         hInstance,                      // Дескриптор додатка
