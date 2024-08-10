@@ -1,14 +1,31 @@
 #include "window.h"
 #include "drawCube.h"
-#include <chrono>
 
 static float angleX = 0.0f;
 static float angleY = 0.0f;
 static POINT lastMousePos;
 static bool firstMouseMovement = true;
+static bool cursorLocked = false;  // Стан курсора
 static float cameraX = 0.0f;  // Положення камери по X
 static float cameraY = 0.0f;  // Положення камери по Y
 static float cameraZ = 0.0f;  // Положення камери по Z
+
+// Функція для захоплення курсора в межах вікна
+void LockCursor(HWND hwnd) {
+    RECT rect;
+    GetClientRect(hwnd, &rect);
+    MapWindowPoints(hwnd, NULL, (LPPOINT)&rect, 2);
+    ClipCursor(&rect);
+    ShowCursor(FALSE);  // Приховати курсор
+    cursorLocked = true;
+}
+
+// Функція для звільнення курсора
+void UnlockCursor() {
+    ClipCursor(NULL);
+    ShowCursor(TRUE);  // Показати курсор
+    cursorLocked = false;
+}
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
@@ -39,37 +56,48 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         return 0;
     }
     case WM_MOUSEMOVE: {
-        int mouseX = LOWORD(lParam);
-        int mouseY = HIWORD(lParam);
+        if (cursorLocked) {
+            int mouseX = LOWORD(lParam);
+            int mouseY = HIWORD(lParam);
 
-        if (firstMouseMovement) {
+            if (firstMouseMovement) {
+                lastMousePos.x = mouseX;
+                lastMousePos.y = mouseY;
+                firstMouseMovement = false;
+            }
+
+            // Визначення зміщення миші
+            int dx = mouseX - lastMousePos.x;
+            int dy = mouseY - lastMousePos.y;
+
+            // Оновлення кутів обертання
+            angleY += dx * 0.01f;
+            angleX += dy * 0.01f;
+
             lastMousePos.x = mouseX;
             lastMousePos.y = mouseY;
-            firstMouseMovement = false;
+
+            InvalidateRect(hwnd, NULL, FALSE);
         }
-
-        // Визначення зміщення миші
-        int dx = mouseX - lastMousePos.x;
-        int dy = mouseY - lastMousePos.y;
-
-        // Оновлення кутів обертання
-        angleY += dx * 0.01f;
-        angleX += dy * 0.01f;
-
-        lastMousePos.x = mouseX;
-        lastMousePos.y = mouseY;
-
-        InvalidateRect(hwnd, NULL, FALSE);
         return 0;
     }
     case WM_KEYDOWN: {
-        // Рух камери за допомогою клавіш
         switch (wParam) {
-        case VK_CONTROL: cameraY -= 0.1f; break;  // Перемістити камеру вгору
+        case VK_ESCAPE: {
+            // Вивільнити курсор
+            if (cursorLocked) {
+                UnlockCursor();
+            }
+            else {
+                LockCursor(hwnd);
+            }
+            break;
+        }
+        case VK_CONTROL : cameraY -= 0.1f; break;  // Перемістити камеру вгору
         case VK_SPACE : cameraY += 0.1f; break;  // Перемістити камеру вниз
         case 'D': cameraX -= 0.1f; break;  // Перемістити камеру вліво
         case 'A': cameraX += 0.1f; break;  // Перемістити камеру вправо
-        case 'W' : cameraZ -= 0.1f; break; // Перемістити камеру вперед (по осі Z)
+        case 'W': cameraZ -= 0.1f; break; // Перемістити камеру вперед (по осі Z)
         case 'S': cameraZ += 0.1f; break; // Перемістити камеру назад (по осі Z)
         }
         InvalidateRect(hwnd, NULL, FALSE);  // Перемалювати вікно
@@ -113,6 +141,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow) {
 
     if (hwnd != NULL) {
         ShowWindow(hwnd, nCmdShow);
+        LockCursor(hwnd);  // Захопити курсор, коли вікно створено
     }
 
     return hwnd;
