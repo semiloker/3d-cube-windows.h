@@ -1,14 +1,18 @@
 #include "window.h"
 #include "drawCube.h"
 
-static float angleX = 0.0f;
-static float angleY = 0.0f;
+static float angleX = 0.0f;  // Кут обертання по X
+static float angleY = 0.0f;  // Кут обертання по Y
 static POINT lastMousePos;
 static bool firstMouseMovement = true;
 static bool cursorLocked = false;  // Стан курсора
 static float cameraX = 0.0f;  // Положення камери по X
 static float cameraY = 0.0f;  // Положення камери по Y
 static float cameraZ = 0.0f;  // Положення камери по Z
+
+// Міжзначення для обмеження кута X
+const float MIN_ANGLE_X = 49.0f;
+const float MAX_ANGLE_X = 51.0f;
 
 // Функція для захоплення курсора в межах вікна
 void LockCursor(HWND hwnd) {
@@ -44,7 +48,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         DeleteObject(hBrush);
 
         // Малювання куба
-        DrawCube(hdc, angleX, angleY, windowWidth, windowHeight, cameraX, cameraY, cameraZ);
+        DrawCube(hdc, angleX, angleY, cameraX, cameraY, cameraZ, windowWidth, windowHeight);
 
         // Текст інформації про напрямок камери
         std::wstring directionText = L"Camera Position: X = " + std::to_wstring(cameraX) + L", Y = " + std::to_wstring(cameraY) +
@@ -74,6 +78,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
             angleY += dx * 0.01f;
             angleX += dy * 0.01f;
 
+            // Обмеження кута X
+            if (angleX < MIN_ANGLE_X) angleX = MIN_ANGLE_X;
+            if (angleX > MAX_ANGLE_X) angleX = MAX_ANGLE_X;
+
             lastMousePos.x = mouseX;
             lastMousePos.y = mouseY;
 
@@ -93,12 +101,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
             }
             break;
         }
-        case VK_CONTROL : cameraY -= 0.1f; break;  // Перемістити камеру вгору
-        case VK_SPACE : cameraY += 0.1f; break;  // Перемістити камеру вниз
-        case 'D': cameraX -= 0.1f; break;  // Перемістити камеру вліво
-        case 'A': cameraX += 0.1f; break;  // Перемістити камеру вправо
-        case 'W': cameraZ -= 0.1f; break; // Перемістити камеру вперед (по осі Z)
-        case 'S': cameraZ += 0.1f; break; // Перемістити камеру назад (по осі Z)
+        case 'W': cameraX -= sin(angleY) * 0.1f; cameraZ -= cos(angleY) * 0.1f; break;  // Рух вперед
+        case 'S': cameraX += sin(angleY) * 0.1f; cameraZ += cos(angleY) * 0.1f; break;  // Рух назад
+        case 'A': cameraX += cos(angleY) * 0.1f; cameraZ -= sin(angleY) * 0.1f; break;  // Рух вліво
+        case 'D': cameraX -= cos(angleY) * 0.1f; cameraZ += sin(angleY) * 0.1f; break;  // Рух вправо
+        case VK_UP:
+            cameraY -= 0.1f;
+            if (cameraY < MIN_ANGLE_X) cameraY = MIN_ANGLE_X;  // Обмеження по Y
+            break;  // Рух вгору
+        case VK_DOWN:
+            cameraY += 0.1f;
+            if (cameraY > MAX_ANGLE_X) cameraY = MAX_ANGLE_X;  // Обмеження по Y
+            break;  // Рух вниз
         }
         InvalidateRect(hwnd, NULL, FALSE);  // Перемалювати вікно
         return 0;
@@ -132,7 +146,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow) {
         CLASS_NAME,                     // Ім'я класу
         L"3D Cube",                     // Назва вікна
         WS_OVERLAPPEDWINDOW,            // Стиль вікна
-        CW_USEDEFAULT, CW_USEDEFAULT, 500, 500, // Розмір і положення вікна
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, // Розмір і положення вікна
         NULL,                           // Батьківське вікно
         NULL,                           // Меню
         hInstance,                      // Дескриптор додатка
